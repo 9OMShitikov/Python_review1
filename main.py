@@ -1,6 +1,14 @@
 import sys
+from enum import Enum
 import field_use
 import simple_strategy
+from game_states import GameState
+
+
+class SessionState(Enum):
+
+    game = 0
+    end_of_game = 1
 
 
 field_size = 15
@@ -14,7 +22,7 @@ game_field.field_print()
 state = 1
 while True:
     input_cmd = input().split()
-# If we are gaming.
+    # If we are gaming.
     if state == 1:
         if (input_cmd[0] == "move") and (len(input_cmd) == 3) and input_cmd[1].isdigit() and input_cmd[2].isdigit():
             if (1 <= int(input_cmd[1]) <= field_size) and (1 <= int(input_cmd[2]) <= field_size):
@@ -25,17 +33,17 @@ while True:
                     game_field.put_o(x1, y1)
                     game_field.field_print()
                     winner = game_field.check()
-                    if winner != 0:
-                        if winner == 1:
-                            print("You win.")
-                        elif winner == 2:
-                            print("Computer win.")
-                        elif winner == 3:
-                            print("Draw.")
-                        print("Start another game?(Y/N)")
-                        state = 2
-                    else:
+                    if winner == GameState.not_ended:
                         state = 1
+                        continue
+                    elif winner == GameState.win_first:
+                        print("You win.")
+                    elif winner == GameState.win_second:
+                        print("Computer win.")
+                    elif winner == GameState.draw:
+                        print("Draw.")
+                    print("Start another game?(Y/N)")
+                    state = 2
                 else:
                     print("Occupied cell. Repeat the command.")
                     state = 1
@@ -48,7 +56,7 @@ while True:
         else:
             print("Wrong input. Repeat the command.")
             state = 1
-# If the game is ended.
+    # If the game is ended.
     elif state == 2:
         if input_cmd == ["Y"]:
             game_field.clear()
@@ -61,3 +69,6 @@ while True:
         else:
             print("Wrong input. Start another game?(Y/N)")
             state = 2
+    else:
+        print("This is very strange. Game ends.")
+        sys.exit(0)
