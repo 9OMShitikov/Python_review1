@@ -24,10 +24,10 @@ class Field:
         code_list = ['.', 'X', 'O']
         out_str = '  '
         for i in range(self.size):
-            out_str = out_str + (i < 10)*' ' + ' ' + str(i + 1)
+            out_str = out_str + (i < 9) * ' ' + ' ' + str(i + 1)
         print(out_str)
         for i in range(self.size):
-            out_str = (i < 9)*' ' + str(i + 1)
+            out_str = (i < 9) * ' ' + str(i + 1)
             for j in range(self.size):
                 out_str = out_str + '  ' + code_list[self.field[i][j]]
             print(out_str)
@@ -76,7 +76,8 @@ class Field:
         """
 
         This function checks the end of the game.
-        :return: 0 if the game hasn't been ended yet, 1 if "X" have won, 2 if "O" have won, 3 if it is the draw.
+        :return: GameState.not_ended if the game hasn't been ended yet, GameState.win_first if "X" have won,
+                 GameState.win_second if "O" have won, GameState.draw if it is the draw.
         """
         is_draw = True
         for i in range(self.size):
@@ -90,10 +91,12 @@ class Field:
                 if self.field[i][j] == 0:
                     continue
                 # List of the investigated directions.
-                vector_list = [(1, 1), (0, 1), (1, 0)]
+                vector_list = [(1, 1), (0, 1), (1, 0), (-1, 1)]
                 for direction in range(len(vector_list)):
                     if i + (self.row_length - 1) * vector_list[direction][0] >= self.size or \
-                       j + (self.row_length - 1) * vector_list[direction][1] >= self.size:
+                            j + (self.row_length - 1) * vector_list[direction][1] >= self.size or \
+                            i + (self.row_length - 1) * vector_list[direction][0] < 0 or \
+                            j + (self.row_length - 1) * vector_list[direction][1] < 0:
                         continue
                     fl = True
                     for k in range(1, self.row_length):
