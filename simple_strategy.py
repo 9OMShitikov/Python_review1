@@ -38,7 +38,7 @@ class Player:
             for j in range(self.size):
                 if self.field[i][j] == 0:
                     new_rate = self.rate(i, j)
-                    if (new_rate > max_rate) or (ans == (-1, -1)):
+                    if new_rate > max_rate or ans == (-1, -1):
                         ans = (j + 1, i + 1)
                         max_rate = new_rate
         self.field[ans[1] - 1][ans[0] - 1] = 2
@@ -55,19 +55,19 @@ class Player:
         cost_x = 0
         cost_o = 0
 #       Costs of the underfilled lines with the 1, 2, 3, 4, 5, - length
-        costs = [0, 10, 50, 5000, 10000000, 0]
+        costs = {0: 0, 1: 10, 2: 50, 3: 5000, 4: 10000000, 5: 0}
 #       List of the directions we're looking.
-        dir_list = [(1, 1), (1, 0), (0, 1), (-1, 1)]
-        for i in range(4):
+        directions_list = [(1, 1), (1, 0), (0, 1), (-1, 1)]
+        for i in range(len(directions_list)):
             for j in range(-4, 1):
-                if (self.size > p + j*dir_list[i][0] >= 0) and \
-                   (self.size > q + j*dir_list[i][1] >= 0) and \
-                   (self.size > p + (j + 4)*dir_list[i][0] >= 0) and \
-                   (self.size > q + (j + 4)*dir_list[i][1] >= 0):
+                if self.size > p + j*directions_list[i][0] >= 0 and \
+                   self.size > q + j*directions_list[i][1] >= 0 and \
+                   self.size > p + (j + 4)*directions_list[i][0] >= 0 and \
+                   self.size > q + (j + 4)*directions_list[i][1] >= 0:
                     # Counts of empty, "X" and "O" cells on the segment.
                     cells_count = [0, 0, 0]
                     for k in range(5):
-                        cells_count[self.field[p + (j + k)*dir_list[i][0]][q + (j + k)*dir_list[i][1]]] += 1
+                        cells_count[self.field[p + (j + k)*directions_list[i][0]][q + (j + k)*directions_list[i][1]]] += 1
                     if cells_count[2] == 0:
                         cost_x += costs[cells_count[1]]
                     if cells_count[1] == 0:

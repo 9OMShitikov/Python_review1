@@ -1,6 +1,7 @@
 """
 This module sets the behaviour of the playing field.
 """
+from game_states import GameState
 
 
 class Field:
@@ -10,8 +11,9 @@ class Field:
 
         :param field_size: integer, field_size>=5.
         """
-        self.field = [[0]*field_size for i in range(field_size)]
+        self.field = [[0] * field_size for i in range(field_size)]
         self.size = field_size
+        self.row_length = 5
 
     def field_print(self):
         """
@@ -22,10 +24,10 @@ class Field:
         code_list = ['.', 'X', 'O']
         out_str = '  '
         for i in range(self.size):
-            out_str = out_str + (1 - (i+1) // 10) * ' ' + ' ' + str(i+1)
+            out_str = out_str + (i < 9) * ' ' + ' ' + str(i + 1)
         print(out_str)
         for i in range(self.size):
-            out_str = (1 - (i+1) // 10) * ' ' + str(i+1)
+            out_str = (i < 9) * ' ' + str(i + 1)
             for j in range(self.size):
                 out_str = out_str + '  ' + code_list[self.field[i][j]]
             print(out_str)
@@ -43,7 +45,7 @@ class Field:
     def put_x(self, x, y):
         """
 
-        This function put "X" to (x,y) coordinates.
+        This function puts "X" to (x,y) coordinates.
         :param x: integer, 1 <= x <= field_size.
         :param y: integer, 1 <= y <= field_size.
         :return:
@@ -53,7 +55,7 @@ class Field:
     def put_o(self, x, y):
         """
 
-        This function put "O" to (x,y) coordinates.
+        This function puts "O" to (x,y) coordinates.
         :param x: integer, 1 <= x <= field_size.
         :param y: integer, 1 <= y <= field_size.
         :return:
@@ -74,7 +76,8 @@ class Field:
         """
 
         This function checks the end of the game.
-        :return: 0 if the game hasn't been ended yet, 1 if "X" have won, 2 if "O" have won, 3 if it is the draw.
+        :return: GameState.not_ended if the game hasn't been ended yet, GameState.win_first if "X" have won,
+                 GameState.win_second if "O" have won, GameState.draw if it is the draw.
         """
         is_draw = True
         for i in range(self.size):
@@ -82,19 +85,27 @@ class Field:
                 if self.field[i][j] == 0:
                     is_draw = False
         if is_draw:
-            return 3
-        for i in range(self.size - 4):
-            for j in range(self.size - 4):
+            return GameState.draw
+        for i in range(self.size):
+            for j in range(self.size):
                 if self.field[i][j] == 0:
                     continue
                 # List of the investigated directions.
-                vector_list = [(1, 1), (0, 1), (1, 0)]
-                for direction in range(3):
+                vector_list = [(1, 1), (0, 1), (1, 0), (-1, 1)]
+                for direction in range(len(vector_list)):
+                    if i + (self.row_length - 1) * vector_list[direction][0] >= self.size or \
+                            j + (self.row_length - 1) * vector_list[direction][1] >= self.size or \
+                            i + (self.row_length - 1) * vector_list[direction][0] < 0 or \
+                            j + (self.row_length - 1) * vector_list[direction][1] < 0:
+                        continue
                     fl = True
-                    for k in range(1, 5):
+                    for k in range(1, self.row_length):
                         if self.field[i + k * vector_list[direction][0]][j + k * vector_list[direction][1]] != \
                            self.field[i][j]:
                             fl = False
                     if fl:
-                        return self.field[i][j]
-        return 0
+                        if self.field[i][j] == 1:
+                            return GameState.win_first
+                        if self.field[i][j] == 2:
+                            return GameState.win_second
+        return GameState.not_ended
