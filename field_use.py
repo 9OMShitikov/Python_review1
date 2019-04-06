@@ -1,19 +1,11 @@
 """
-This module sets the behaviour of the playing field.
+This module sets the behaviour of the playing field which interacts with the user.
 """
-from game_states import GameState
+from game_states import GAME_STATE
+from base_field import BaseField
 
 
-class Field:
-
-    def __init__(self, field_size):
-        """
-
-        :param field_size: integer, field_size>=5.
-        """
-        self.field = [[0] * field_size for i in range(field_size)]
-        self.size = field_size
-        self.row_length = 5
+class Field(BaseField):
 
     def field_print(self):
         """
@@ -31,16 +23,6 @@ class Field:
             for j in range(self.size):
                 out_str = out_str + '  ' + code_list[self.field[i][j]]
             print(out_str)
-
-    def clear(self):
-        """
-
-        This function sets the playing field empty.
-        :return:
-        """
-        for i in range(self.size):
-            for j in range(self.size):
-                self.field[i][j] = 0
 
     def put_x(self, x, y):
         """
@@ -85,27 +67,24 @@ class Field:
                 if self.field[i][j] == 0:
                     is_draw = False
         if is_draw:
-            return GameState.draw
+            return GAME_STATE.draw
         for i in range(self.size):
             for j in range(self.size):
                 if self.field[i][j] == 0:
                     continue
                 # List of the investigated directions.
-                vector_list = [(1, 1), (0, 1), (1, 0), (-1, 1)]
-                for direction in range(len(vector_list)):
-                    if i + (self.row_length - 1) * vector_list[direction][0] >= self.size or \
-                            j + (self.row_length - 1) * vector_list[direction][1] >= self.size or \
-                            i + (self.row_length - 1) * vector_list[direction][0] < 0 or \
-                            j + (self.row_length - 1) * vector_list[direction][1] < 0:
+                directions = [(1, 1), (0, 1), (1, 0), (-1, 1)]
+                for direction in directions:
+                    if self.check_row_impropriety((i, j), direction):
                         continue
                     fl = True
                     for k in range(1, self.row_length):
-                        if self.field[i + k * vector_list[direction][0]][j + k * vector_list[direction][1]] != \
+                        if self.field[i + k * direction[0]][j + k * direction[1]] != \
                            self.field[i][j]:
                             fl = False
                     if fl:
                         if self.field[i][j] == 1:
-                            return GameState.win_first
+                            return GAME_STATE.win_first
                         if self.field[i][j] == 2:
-                            return GameState.win_second
-        return GameState.not_ended
+                            return GAME_STATE.win_second
+        return GAME_STATE.not_ended
