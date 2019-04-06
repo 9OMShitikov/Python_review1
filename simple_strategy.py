@@ -1,26 +1,10 @@
 """
 This module sets the behaviour of opponent.
 """
+from base_field import BaseField
 
 
-class Player:
-    def __init__(self, field_size):
-        """
-
-        :param field_size:  integer, field_size>=5.
-        """
-        self.field = [[0] * field_size for i in range(field_size)]
-        self.size = field_size
-
-    def clear(self):
-        """
-
-        This function clears the opponent's playing field.
-        :return:
-        """
-        for i in range(self.size):
-            for j in range(self.size):
-                self.field[i][j] = 0
+class Player(BaseField):
 
     def put(self, x, y):
         """
@@ -58,16 +42,13 @@ class Player:
         costs = {0: 0, 1: 10, 2: 50, 3: 5000, 4: 10000000, 5: 0}
 #       List of the directions we're looking.
         directions_list = [(1, 1), (1, 0), (0, 1), (-1, 1)]
-        for i in range(len(directions_list)):
+        for direction in directions_list:
             for j in range(-4, 1):
-                if self.size > p + j*directions_list[i][0] >= 0 and \
-                   self.size > q + j*directions_list[i][1] >= 0 and \
-                   self.size > p + (j + 4)*directions_list[i][0] >= 0 and \
-                   self.size > q + (j + 4)*directions_list[i][1] >= 0:
+                if not self.check_row_impropriety((p + j*direction[0], q + j*direction[1]), direction):
                     # Counts of empty, "X" and "O" cells on the segment.
                     cells_count = [0, 0, 0]
                     for k in range(5):
-                        cells_count[self.field[p + (j + k)*directions_list[i][0]][q + (j + k)*directions_list[i][1]]] += 1
+                        cells_count[self.field[p + (j + k)*direction[0]][q + (j + k)*direction[1]]] += 1
                     if cells_count[2] == 0:
                         cost_x += costs[cells_count[1]]
                     if cells_count[1] == 0:

@@ -1,6 +1,7 @@
 from enum import Enum
 
-class GameState(Enum):
+
+class GAME_STATE(Enum):
 
     not_ended = 0
     win_first = 1

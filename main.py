@@ -2,10 +2,10 @@ import sys
 from enum import Enum
 import field_use
 import simple_strategy
-from game_states import GameState
+from game_states import GAME_STATE
 
 
-class SessionState(Enum):
+class SESSION_STATE(Enum):
 
     game = 0
     end_of_game = 1
@@ -47,50 +47,50 @@ def interact_move(given_cmd):
     game_field.put_o(x1, y1)
     game_field.field_print()
     winner = game_field.check()
-    if winner == GameState.not_ended:
-        return SessionState.game
-    elif winner == GameState.win_first:
+    if winner == GAME_STATE.not_ended:
+        return SESSION_STATE.game
+    elif winner == GAME_STATE.win_first:
         print("You win.")
-    elif winner == GameState.win_second:
+    elif winner == GAME_STATE.win_second:
         print("Computer win.")
-    elif winner == GameState.draw:
+    elif winner == GAME_STATE.draw:
         print("Draw.")
     print("Start another game?(Y/N)")
-    return SessionState.end_of_game
+    return SESSION_STATE.end_of_game
 
 
 # Setting the interaction with user.
 print("We are starting a new game.")
 game_field.field_print()
-state = SessionState.game
+state = SESSION_STATE.game
 while True:
     input_cmd = input().split()
     # If we are gaming.
-    if state == SessionState.game:
+    if state == SESSION_STATE.game:
         if input_cmd[0] == "move" and len(input_cmd) == 3 and input_cmd[1].isdigit() and input_cmd[2].isdigit():
             if check_wrong_move(input_cmd):
                 continue
             state = interact_move(input_cmd)
         elif input_cmd == ["exit"]:
             print("Start another game?(Y/N)")
-            state = SessionState.end_of_game
+            state = SESSION_STATE.end_of_game
         else:
             print("Wrong input. Repeat the command.")
-            state = SessionState.game
+            state = SESSION_STATE.game
 
     # If the game is ended.
-    elif state == SessionState.end_of_game:
+    elif state == SESSION_STATE.end_of_game:
         if input_cmd == ["Y"]:
             game_field.clear()
             second_player.clear()
             print("We are starting a new game.")
             game_field.field_print()
-            state = SessionState.game
+            state = SESSION_STATE.game
         elif input_cmd == ["N"]:
             sys.exit(0)
         else:
             print("Wrong input. Start another game?(Y/N)")
-            state = SessionState.end_of_game
+            state = SESSION_STATE.end_of_game
     else:
         print("This is very strange. Game ends.")
         sys.exit(0)
